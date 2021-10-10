@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_wallet/screens/auth/verif_email.dart';
 import '/screens/widgets/widgets_auth.dart';
 import '/screens/home/home.dart';
 import '/screens/widgets/widgets.dart';
+import 'login.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -42,13 +44,20 @@ class _RegisterState extends State<Register> {
   Widget _inputPassword() {
     return Row(
       children: [
-        TextField(
-              controller: _password,
-              decoration: InputDecoration(hintText: 'Password', helperText: 'Enter Password'),
+        Expanded(
+          child: TextField(
+            obscureText: true,
+                controller: _password,
+                decoration: InputDecoration(hintText: '******', helperText: 'Password'),
+            ),
+        ),
+        SizedBox(width: 20),
+        Expanded(
+          child: TextField(
+            obscureText: true,
+                controller: _passwordConfirm,
+            decoration: InputDecoration(hintText: '******', helperText: 'Confirm Password'),
           ),
-        TextField(
-              controller: _passwordConfirm,
-          decoration: InputDecoration(hintText: 'Password', helperText: 'Confirm Password'),
         )
       ],
     );
@@ -56,9 +65,9 @@ class _RegisterState extends State<Register> {
 
   ///Widget input Submit
   Widget _inputSubmit() {
-    return wInputSubmit(title: 'Register', onPressed: () {
-      _registerSementara;
-    });
+    return wInputSubmit(title: 'Register', onPressed:
+      _registerSementara
+    );
   }
 
   ///Widget Register Google
@@ -67,11 +76,11 @@ class _RegisterState extends State<Register> {
   }
 
   ///Widget Register
-  Widget _textRegister() {
+  Widget _textLogin() {
     return wTextLink(
-      text: "Don't have an account yet ?",
-      title: 'Register',
-      onTap: (){}
+      text: "Already have an account ?",
+      title: 'Login',
+      onTap: () => wPushToReplacement(context, Login())
     );
   }
 
@@ -81,33 +90,46 @@ class _RegisterState extends State<Register> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: _isLoading ? wAppLoading() : Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                wAuthTitle(
-                    title: 'Register', subTitle: 'Enter your email & password'),
-                _inputEmail(),
-                _inputPassword(),
-                _inputSubmit(),
-                wTextDivider(),
-                _loginGoogle(),
-                _textRegister(),
-              ],
-            )),
+        body: SafeArea(
+          child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  wAuthTitle(
+                      title: 'Register', subTitle: 'Fill the form to register'),
+                  _inputName(),
+                  _inputEmail(),
+                  _inputPassword(),
+                  SizedBox(height: 30),
+                  _inputSubmit(),
+                  wTextDivider(),
+                  _loginGoogle(),
+                  _textLogin(),
+                ],
+              )),
+        ),
       ),
     );
   }
 
   void _registerSementara() async {
+
+    print('Fullname: ${_name.text}');
+    print('Email: ${_email.text}');
+    print('Password: ${_password.text}');
+    print('Confirm Password: ${_passwordConfirm.text}');
+
     setState(() => _isLoading = true);
 
-    if(_email.text == 'eza@gmail.com' && _password.text == '123123'){
-      await Future.delayed(Duration(seconds: 3));
-      wPushToReplacement(context, Home());
-    } else {
-      print('Gagal');
-    }
+    await Future.delayed(Duration(seconds: 2));
+     wPushToReplacement(context, Login());
+
+     showModalBottomSheet(
+       isScrollControlled: true,
+       backgroundColor: Colors.transparent,
+       context: context, builder: (context) {
+       return VerifEmail();
+     });
   }
 }
